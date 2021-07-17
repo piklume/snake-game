@@ -2,6 +2,7 @@ import './App.css';
 // import React,{ useEffect } from 'react';
 
 import GameArea from './components/game-area/game-area.component';
+// import GameArea from './components/game-area/game-area-hook.component';
 
 function App() {
 
