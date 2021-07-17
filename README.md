@@ -18,3 +18,8 @@ same line.
 
 I have used yarn for this, so if you run into problems using npm, 
 just use "yarn start"
+
+I have added a few extra mechanics other than what was mentioned in the question:
+
+● The snake grows by 1 dot each time it consumes the food.
+● If the snake bites itself, it will trigger a game over alert.

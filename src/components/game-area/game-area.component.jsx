@@ -1,13 +1,11 @@
 import React from 'react';
-// import useEventListener from '@use-it/event-listener'
-
 import './game-area.styles.scss';
 
 import Snake from '../snake/snake.component';
 import Food from '../food/food.component';
 import CustomButton from '../custom-button/custom-button.component';
 
-const getRandomCoordinates = () => {
+const getRandomCoordinates = () => { // This is generate random coordinates for the food
     let min = 1;
     let max = 240;
     let x = Math.floor((Math.random()*(max-min+1)+min)/10)*10;
@@ -15,7 +13,7 @@ const getRandomCoordinates = () => {
     return [x,y]
 }
 
-const INITIAL_STATE = {
+const INITIAL_STATE = { // Initial state of the snake game
     snakeDots: [
         [10,130],
         [20,130],
@@ -35,15 +33,14 @@ class GameArea extends React.Component {
         this.state = INITIAL_STATE;
     }
 
-    componentDidMount() {
-        
-        setInterval(this.updateFoodLocation, 40000);
+    componentDidMount() {   
+        setInterval(this.updateFoodLocation, 40000); // This will update the food location after 40sec   
         document.onkeydown = this.handelArrowPress;
     }
 
     componentDidUpdate() {
-        // this.checkOutOfBounds();
-        this.checkSnakeConsumption();
+        this.checkSnakeConsumption(); // This is to handel when the snake eats the food
+        this.checkIfCollapsed(); // Added this mechanic where the game ends if the snake bites itself
     }
 
     updateFoodLocation = () => {
@@ -72,7 +69,9 @@ class GameArea extends React.Component {
         // moveSnake();
     }
 
-    moveSnake = () => {
+    moveSnake = () => { 
+        // This has the logic for normal movement of snake as well as wrap around
+        // when it reaches the boundary 
         
         // console.log(`Moving snake : ${direction}`);
         let dots = [...this.state.snakeDots];
@@ -114,30 +113,44 @@ class GameArea extends React.Component {
           })
     }
 
-    gameOver = () => {
-        alert('Game Over');
+    gameOver = () => { // Game over state 
+        alert(`Game Over!! Your snake bit itself! Score: ${this.state.score}`);
         this.setState(INITIAL_STATE);
     }
 
-    checkSnakeConsumption = () => {
+    enlargeSnake() { // This will increase the length of snake by 1 dot
+        let dots = [...this.state.snakeDots];
+        dots.unshift([])
+        this.setState({
+          snakeDots: dots
+        })
+    }
+
+    checkIfCollapsed() { // This is to trigger the game over state when the snake bites itself
+        let snake = [...this.state.snakeDots];
+        let head = snake[snake.length - 1];
+        snake.pop();
+        snake.forEach(dot => {
+          if (head[0] === dot[0] && head[1] === dot[1]) {
+            this.gameOver();
+          }
+        })
+    }
+
+    checkSnakeConsumption = () => { // Handels the snake food consumption
         const { snakeDots,snakeFood,score } = this.state;
         const head = snakeDots[snakeDots.length - 1];
 
         if(head[0] === snakeFood[0] && head[1] === snakeFood[1]) {
+            this.enlargeSnake();
             this.updateFoodLocation();
             this.setState({score: score + 1});
         }
     }
 
-    // startGame = setInterval(this.moveSnake, 1000);
-
-    // var helloEverySecond = setInterval(function() { console.log("hello");}, 1000);
-    // clearInterval(helloEverySecond);
-    handelClick = () => {
-        // alert('clicked');
+    handelClick = () => { // Click handler from start/stop states of the game
         const { buttonText } = this.state;
         if(buttonText === 'Start') {          
-            // let startGame = setInterval(this.moveSnake , 1000);
             this.setState({buttonText: 'Stop', isGameRunning: true});
             
             let startGame = setInterval(() => {
@@ -150,17 +163,16 @@ class GameArea extends React.Component {
 
         } else {   
             this.setState({buttonText: 'Start',isGameRunning: false});
-            // clearInterval(startGame);
         }
         
     }
 
-    // useEventListener('keydown', handelArrowPress);
     render() {
         const { snakeDots,snakeFood,score,buttonText } = this.state;
         return (
             <div className='game-page'>
-                <h2>Score: {score}</h2>
+                <h2>Play snake!</h2>
+                <h3>Score: {score}</h3>
                 <div className='game-area' >
                     <Snake snakeDots={snakeDots} />
                     <Food snakeFood={snakeFood} />
