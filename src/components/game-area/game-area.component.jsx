@@ -5,12 +5,13 @@ import './game-area.styles.scss';
 
 import Snake from '../snake/snake.component';
 import Food from '../food/food.component';
+import CustomButton from '../custom-button/custom-button.component';
 
 const getRandomCoordinates = () => {
     let min = 1;
     let max = 240;
-    let x = Math.floor((Math.random()*(max-min+1)+min)/2)*2;
-    let y =  Math.floor((Math.random()*(max-min+1)+min)/2)*2;
+    let x = Math.floor((Math.random()*(max-min+1)+min)/10)*10;
+    let y =  Math.floor((Math.random()*(max-min+1)+min)/10)*10;
     return [x,y]
 }
 
@@ -21,7 +22,10 @@ const INITIAL_STATE = {
         [30,130]
     ],
     snakeFood: getRandomCoordinates(),
-    direction: 'RIGHT'
+    direction: 'RIGHT',
+    score: 0,
+    buttonText: 'Start',
+    isGameRunning: false
 }
 
 class GameArea extends React.Component {
@@ -32,13 +36,14 @@ class GameArea extends React.Component {
     }
 
     componentDidMount() {
-        setInterval(this.moveSnake, 1000);
+        
         setInterval(this.updateFoodLocation, 40000);
         document.onkeydown = this.handelArrowPress;
     }
 
     componentDidUpdate() {
         this.checkOutOfBounds();
+        this.checkSnakeConsumption();
     }
 
     updateFoodLocation = () => {
@@ -114,14 +119,55 @@ class GameArea extends React.Component {
         this.setState(INITIAL_STATE);
     }
 
+    checkSnakeConsumption = () => {
+        const { snakeDots,snakeFood,score } = this.state;
+        const head = snakeDots[snakeDots.length - 1];
+
+        if(head[0] === snakeFood[0] && head[1] === snakeFood[1]) {
+            this.updateFoodLocation();
+            this.setState({score: score + 1});
+        }
+    }
+
+    // startGame = setInterval(this.moveSnake, 1000);
+
+    // var helloEverySecond = setInterval(function() { console.log("hello");}, 1000);
+    // clearInterval(helloEverySecond);
+    handelClick = () => {
+        // alert('clicked');
+        const { buttonText } = this.state;
+        if(buttonText === 'Start') {          
+            // let startGame = setInterval(this.moveSnake , 1000);
+            this.setState({buttonText: 'Stop', isGameRunning: true});
+            
+            let startGame = setInterval(() => {
+                this.moveSnake(); 
+                if (this.state.isGameRunning === false) {
+                    clearInterval(startGame);
+                }
+            }                
+            , 1000);
+
+        } else {   
+            this.setState({buttonText: 'Start',isGameRunning: false});
+            // clearInterval(startGame);
+        }
+        
+    }
 
     // useEventListener('keydown', handelArrowPress);
     render() {
-        const { snakeDots,snakeFood } = this.state;
+        const { snakeDots,snakeFood,score,buttonText } = this.state;
         return (
-            <div className='game-area' >
-                <Snake snakeDots={snakeDots} />
-                <Food snakeFood={snakeFood} />
+            <div className='game-page'>
+                <h2>Score: {score}</h2>
+                <div className='game-area' >
+                    <Snake snakeDots={snakeDots} />
+                    <Food snakeFood={snakeFood} />
+                </div>
+                <CustomButton
+                onClick={this.handelClick}
+                >{buttonText}</CustomButton>
             </div>
         )
     }
