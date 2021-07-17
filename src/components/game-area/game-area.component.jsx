@@ -42,7 +42,7 @@ class GameArea extends React.Component {
     }
 
     componentDidUpdate() {
-        this.checkOutOfBounds();
+        // this.checkOutOfBounds();
         this.checkSnakeConsumption();
     }
 
@@ -82,16 +82,24 @@ class GameArea extends React.Component {
 
         switch(this.state.direction) {
             case 'UP':
-                head = [head[0], head[1] - 10];
+                head = (head[1] - 10 >= 0) ?
+                [head[0], head[1] - 10]
+                : [head[0], 240];
                 break;
             case 'DOWN':
-                head = [head[0], head[1] + 10];
+                head = (head[1] + 10 <= 240) ?
+                 [head[0], head[1] + 10]
+                 : [head[0], 0];
                 break;
             case 'RIGHT':
-                head = [head[0] + 10, head[1]];
+                head = (head[0] + 10 <= 240 ) ?
+                 [head[0] + 10, head[1]]
+                 : [0, head[1]];
                 break;
             case 'LEFT':
-                head= [head[0] - 10, head[1]];
+                head= (head[0] - 10 >= 0) ?
+                 [head[0] - 10, head[1]]
+                 : [240, head[1]];
                 break;
             default:
                 break;
@@ -104,14 +112,6 @@ class GameArea extends React.Component {
         this.setState({
             snakeDots: dots
           })
-    }
-
-    checkOutOfBounds = () => {
-        const { snakeDots } = this.state;
-        const head = snakeDots[snakeDots.length - 1];
-        if(head[0] >= 240 || head[0] < 0 || head[1] >= 240 || head[1] < 0) {
-            this.gameOver();
-        }
     }
 
     gameOver = () => {
