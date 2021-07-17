@@ -84,22 +84,22 @@ class GameArea extends React.Component {
             case 'UP':
                 head = (head[1] - 10 >= 0) ?
                 [head[0], head[1] - 10]
-                : [head[0], 240];
+                : [head[0], 250];
                 break;
             case 'DOWN':
-                head = (head[1] + 10 <= 240) ?
+                head = (head[1] + 10 <= 250) ?
                  [head[0], head[1] + 10]
                  : [head[0], 0];
                 break;
             case 'RIGHT':
-                head = (head[0] + 10 <= 240 ) ?
+                head = (head[0] + 10 <= 250 ) ?
                  [head[0] + 10, head[1]]
                  : [0, head[1]];
                 break;
             case 'LEFT':
                 head= (head[0] - 10 >= 0) ?
                  [head[0] - 10, head[1]]
-                 : [240, head[1]];
+                 : [250, head[1]];
                 break;
             default:
                 break;

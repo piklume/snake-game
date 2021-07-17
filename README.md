@@ -15,3 +15,6 @@ same line.
 ● Default moving speed is 1 sec. (move 1 dot per second)
 ● Default snake position at 3x13
 ● Default snake state is stopped
+
+I have used yarn for this, so if you run into problems using npm, 
+just use "yarn start"
