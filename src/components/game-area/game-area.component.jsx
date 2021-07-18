@@ -24,24 +24,33 @@ const INITIAL_STATE = { // Initial state of the snake game
     direction: 'RIGHT',
     score: 0,
     buttonText: 'Start',
-    isGameRunning: false
+    isGameRunning: false,
+    snakeSpeed: 500,
+    foodSpwanRate: 40000
 }
 
 class GameArea extends React.Component {
     constructor() {
         super();
-
+        
         this.state = INITIAL_STATE;
     }
 
+    startSnake = 0
+    startFood = 0
+    
     componentDidMount() {   
-        setInterval(this.updateFoodLocation, 40000); // This will update the food location after 40sec   
+        // setInterval(this.updateFoodLocation, 40000); // This will update the food location after 40sec   
         document.onkeydown = this.handelArrowPress;
     }
 
     componentDidUpdate() {
         this.checkSnakeConsumption(); // This is to handel when the snake eats the food
         this.checkIfCollapsed(); // Added this mechanic where the game ends if the snake bites itself
+        if (this.state.isGameRunning === false) {
+            clearInterval(this.startSnake);
+            clearInterval(this.startFood);
+        }
     }
 
     updateFoodLocation = () => {
@@ -68,6 +77,26 @@ class GameArea extends React.Component {
         }   
         // console.log(direction);
         // moveSnake();
+    }
+
+    handelDPadClick = (event) => {
+        console.log(event.target.id);
+        switch(event.target.id) {
+            case 'up-arrow':
+                this.setState({direction: 'UP'});
+                break;
+            case 'down-arrow':
+                this.setState({direction: 'DOWN'});
+                break;
+            case 'right-arrow':
+                this.setState({direction: 'RIGHT'});
+                break;
+            case 'left-arrow':
+                this.setState({direction: 'LEFT'});
+                break;
+            default:
+                break;
+        }   
     }
 
     moveSnake = () => { 
@@ -138,6 +167,17 @@ class GameArea extends React.Component {
         })
     }
 
+    increaseSpeed() {
+        const { snakeSpeed,foodSpwanRate } = this.state;
+        
+        this.setState({
+        snakeSpeed: (snakeSpeed - 20) > 50 ? (snakeSpeed - 20) : 50,
+        foodSpwanRate: (foodSpwanRate - 500) > 3000 ? (foodSpwanRate - 500) : 500
+        })
+        
+        this.startGame();
+      }
+
     checkSnakeConsumption = () => { // Handels the snake food consumption
         const { snakeDots,snakeFood,score } = this.state;
         const head = snakeDots[snakeDots.length - 1];
@@ -145,23 +185,31 @@ class GameArea extends React.Component {
         if(head[0] === snakeFood[0] && head[1] === snakeFood[1]) {
             this.enlargeSnake();
             this.updateFoodLocation();
+            this.increaseSpeed();
             this.setState({score: score + 1});
         }
+    }
+    
+    startGame() {   
+        clearInterval(this.startSnake);
+        clearInterval(this.startFood);
+
+        this.startSnake = setInterval(() => {
+            this.moveSnake();
+            console.log(`Moving snake with speed: ${this.state.snakeSpeed}`)
+        }, this.state.snakeSpeed);
+
+        this.startFood = setInterval(() => {
+            this.updateFoodLocation();
+            console.log(`Updating food spawn with ferquency: ${this.state.foodSpwanRate}`)
+        }, this.state.foodSpwanRate)
     }
 
     handelClick = () => { // Click handler from start/stop states of the game
         const { buttonText } = this.state;
         if(buttonText === 'Start') {          
             this.setState({buttonText: 'Stop', isGameRunning: true});
-            
-            let startGame = setInterval(() => {
-                this.moveSnake(); 
-                if (this.state.isGameRunning === false) {
-                    clearInterval(startGame);
-                }
-            }                
-            , 1000);
-
+            this.startGame();
         } else {   
             this.setState({buttonText: 'Start',isGameRunning: false});
         }
@@ -181,7 +229,7 @@ class GameArea extends React.Component {
                 <CustomButton
                 onClick={this.handelClick}
                 >{buttonText}</CustomButton>
-                <DPad />
+                <DPad handelDPadClick={this.handelDPadClick} />
             </div>
         )
     }

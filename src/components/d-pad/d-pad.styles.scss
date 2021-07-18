@@ -1,9 +1,32 @@
 .d-pad-container {
     display: grid;
-    margin-top: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-auto-rows: max-content;
+    justify-items: center;
+    margin: 10px;
 
     .d-pad-arrows {
-        width: 70px;
-        height: 70px;
+        width: 60px;
+        height: 60px;
+        
+    }
+
+    .up-arrow {
+        grid-column: 2/3;
+    }
+
+    .left-arrow {
+        grid-column: 1/2;
+        justify-self: end;
+    }
+
+    .right-arrow {
+        grid-column: 3/4;
+        justify-self: start;
+    }
+
+    .down-arrow {
+        grid-column: 2/3;
     }
 }
