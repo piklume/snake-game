@@ -4,6 +4,7 @@ import './game-area.styles.scss';
 import Snake from '../snake/snake.component';
 import Food from '../food/food.component';
 import CustomButton from '../custom-button/custom-button.component';
+import DPad from '../d-pad/d-pad.component';
 
 const getRandomCoordinates = () => { // This is generate random coordinates for the food
     let min = 1;
@@ -180,6 +181,7 @@ class GameArea extends React.Component {
                 <CustomButton
                 onClick={this.handelClick}
                 >{buttonText}</CustomButton>
+                <DPad />
             </div>
         )
     }

@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 // import React,{ useEffect } from 'react';
 
 import GameArea from './components/game-area/game-area.component';
